@@ -9,9 +9,15 @@ export const getMany = query({
 
 })
 
+//This here simply display everything in the users tabel and its retreives by collect()
+
 export const add = mutation({
     args: {},
     handler: async (ctx) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (identity === null) {
+            throw new Error("Not authenticated");
+        }
         const userId = await ctx.db.insert("users", {
             name: "Antonio",
         });
@@ -19,3 +25,4 @@ export const add = mutation({
     },
 })
 
+//The mutation file allows for changes to be mde in the convex database. Const add here allows us to add users to the databse
