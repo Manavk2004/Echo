@@ -1,11 +1,10 @@
-import { SignInView } from "@/modules/auth/ui/views/sign-in-view"
+import { SignIn } from "@clerk/nextjs"
 
-const Page = () => {
+export const SignInView = () => {
     return(
-        <SignInView />
+        <SignIn routing="hash"/>
     )
 }
 
-export default Page
 
 //The reason here we have [[...sign-in]] is because Clerk JS could have some routes after the /sign-in/ that we cannot directly know/account for
