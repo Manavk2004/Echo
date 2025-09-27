@@ -8,7 +8,7 @@ function WidgetFooter() {
     const screen = "selection"
 
   return (
-    <footer className='flex items-cenetr justify-between border-t bg-background'>
+    <footer className='flex items-center justify-between border-t bg-background'>
       <Button className='h-14 flex-1 rounded-none' onClick={() => {}} size="icon" variant="ghost">
         <HomeIcon
             className={cn("size-5", screen === "selection" && "text-primary" )}
