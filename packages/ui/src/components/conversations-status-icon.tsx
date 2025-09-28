@@ -1,4 +1,4 @@
-import { ArrowRightIcon, ArrowUpIcon, CheckIcon } from "lucide-react";
+import { ArrowRightIcon, ArrowUpIcon, CheckIcon, Icon } from "lucide-react";
 import { cn } from "../lib/utils.js";
 
 
