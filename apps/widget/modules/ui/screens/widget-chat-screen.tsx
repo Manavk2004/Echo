@@ -5,6 +5,8 @@ import { z } from "zod/v4"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useThreadMessages, toUIMessages } from "@convex-dev/agent/react"
+
+
 import { useAtomValue, useSetAtom } from "jotai"
 import { AlertTriangleIcon, ArrowLeft, ArrowLeftIcon, MenuIcon } from "lucide-react"
 import { contactSessionIdAtomFamily, conversationIdAtom, errorMessageAtom, organizationIdAtom, screenAtom } from "../atoms/widget-atoms"
@@ -25,6 +27,7 @@ import { AISuggestion, AISuggestions } from "@workspace/ui/components/ai/suggest
 const formSchema = z.object({
     message: z.string().min(1, "'Message is required")
 })
+
 
 export const WidgetChatScreen = () => {
     const setScreen = useSetAtom(screenAtom)
@@ -52,7 +55,8 @@ export const WidgetChatScreen = () => {
             }
             : "skip",
         { initialNumItems: 10 }
-    )
+    ) 
+
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
