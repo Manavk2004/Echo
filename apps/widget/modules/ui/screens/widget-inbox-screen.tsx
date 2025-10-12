@@ -8,7 +8,7 @@ import { Button } from "@workspace/ui/components/button"
 import { usePaginatedQuery } from "convex/react"
 import { api } from "@workspace/backend/_generated/api"
 import { formatDistanceToNow } from "date-fns"
-import { ConversationStatusIcon } from "@workspace/ui/components/conversations-status-icon"
+import { ConversationStatusIcon } from "@workspace/ui/components/conversation-status-icon"
 
 export const WidgetInboxScreen = () => {
 
@@ -67,10 +67,12 @@ export const WidgetInboxScreen = () => {
                                     </p>
 
                                 </div>
-                                <div className="flex w-full items-center justify-between gap-x-2">
-                                    <p>
+                                <div className="flex w-full items-center justify-between gap-x-2 ">
+                                    <p className="truncate">
                                         {conversation.lastMessage?.text}
+                
                                     </p>
+                                    <ConversationStatusIcon status={conversation.status} />
             
                                 </div>
                             </div>
