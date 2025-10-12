@@ -12,20 +12,28 @@ import { ListIcon, ArrowRightLeft, ArrowUpIcon, CheckIcon, CornerUpLeftIcon, Arr
 import { ScrollArea } from '@workspace/ui/components/scroll-area'
 import { api } from '@workspace/backend/convex/_generated/api'
 import { usePaginatedQuery } from 'convex/react'
-import { getCountryFromTimezone } from '@/lib/country-utils'
+import { getCountryFlagUrl, getCountryFromTimezone } from '@/lib/country-utils'
 import Link from 'next/link'
 import { cn } from '@workspace/ui/lib/utils'
 import { usePathname } from 'next/navigation'
 import { formatDistanceToNow } from 'date-fns'
-import { ConversationStatusIcon } from '@workspace/ui/components/conversations-status-icon'
+import { ConversationStatusIcon } from '@workspace/ui/components/conversation-status-icon'
+import { useAtomValue, useSetAtom } from 'jotai/react'
+import { statusfilterAtom } from '../dashboard/ui/layouts/atoms'
 
 function ConversationsPanel() {
     const pathname = usePathname()
 
+    const statusFilter = useAtomValue(statusfilterAtom)
+    const setStatusFilter = useSetAtom(statusfilterAtom)
+
     const conversations = usePaginatedQuery(
         api.private.conversations.getMany,
         {
-            status: undefined
+            status: 
+                statusFilter === "all"
+                    ? undefined 
+                    : statusFilter
         },
         {
             initialNumItems: 10
@@ -36,8 +44,8 @@ function ConversationsPanel() {
       <div className='flex flex-col gap-3.5 border-b p-2'>
         <Select
             defaultValue='all'
-            onValueChange={() => {}}
-            value="all"
+            onValueChange={(value) => setStatusFilter(value as "unresolved" | "escalated" | "resolved" | "all")}
+            value={statusFilter}
         >
             <SelectTrigger className='h-8 border-none px-1.5 shadow-none ring-0 hover:bg-accent hover:text-accent-foreground focus-visible::ring-0'>
                 <SelectValue placeholder="Filter" />
@@ -83,7 +91,10 @@ function ConversationsPanel() {
                     conversation.contactSession.metadata?.timezone
                 )
 
-                const countryFlagUrl = "/logo.svg"
+                const countryFlagUrl = country?.code
+                    ? getCountryFlagUrl(country.code)
+                    : undefined
+
 
                 return(
                     <Link 
@@ -113,12 +124,13 @@ function ConversationsPanel() {
                                         <CornerUpLeftIcon className='size-3 shrink-0 text-muted-foreground' />
                                     )}
                                     <span className={cn(
-                                        "line-clamp-1 text-muted-foreg'round text-xs",
+                                        "line-clamp-1 text-muted-foreground text-xs",
                                         !isLastMessageFromOperator && "font-bold text-black"
                                     )}>
                                         {conversation.lastMessage?.text}
                                     </span>
                                 </div>
+                                <ConversationStatusIcon status={conversation.status}/>
                             </div>
                         </div>
                     </Link>
