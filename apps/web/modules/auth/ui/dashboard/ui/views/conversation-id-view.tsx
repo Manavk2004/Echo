@@ -2,7 +2,7 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Button } from "@workspace/ui/components/button"
-import { useMutation, useQuery } from "convex/react"
+import { useAction, useMutation, useQuery } from "convex/react"
 import { MoreHorizontalIcon, Wand2Icon } from "lucide-react"
 import {
     AIConversation, 
@@ -31,6 +31,8 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toUIMessages } from "@convex-dev/agent/react"
 import { useThreadMessages } from "@convex-dev/agent/react"
+import { ConversationStatusButton } from "../../../components/conversation-status-button"
+import { useState } from "react"
 
 const formSchema = z.object({
     message: z.string().min(1, "Message is required")
@@ -60,6 +62,22 @@ export const ConversationIdView = ({
         }
     })
 
+    const [isEnhancing, setIsEnhancing] = useState(false)
+    const enhanceResponse = useAction(api.private.messages.enhanceResponse)
+    const handleEnhanceResponse = async () => {
+        setIsEnhancing(true)
+        const currentValue = form.getValues("message")
+        try{
+            const response = await enhanceResponse({ prompt: currentValue})
+
+            form.setValue("message", response)
+        }catch (error) {
+            console.error(error)
+        }finally{
+            setIsEnhancing(false)
+        }
+    }
+
     const createMessage = useMutation(api.private.messages.create)
 
     const onSubmit = async (values : z.infer<typeof formSchema>) => {
@@ -75,6 +93,37 @@ export const ConversationIdView = ({
         }
     }
 
+    const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
+    const updateConversationStatus = useMutation(api.private.conversations.updateStatus)
+    const handleToggleStatus = async () => {
+        if (!conversation){
+            return
+        }
+
+        setIsUpdatingStatus(true)
+
+        let newStatus: "unresolved" | "resolved" | "escalated"
+
+        if (conversation.status === "unresolved"){
+            newStatus = "escalated";
+        }else if (conversation.status === "escalated"){
+            newStatus = "resolved"
+        }else {
+            newStatus = "unresolved"
+        }
+
+        try {
+            await updateConversationStatus({
+                conversationId,
+                status: newStatus,
+            })
+        }catch (error) {
+            console.error(error)
+        }finally{
+            setIsUpdatingStatus(false)
+        }
+    }
+
 
     return(
         <div className="flex h-full flex-col bg-muted">
@@ -85,6 +134,13 @@ export const ConversationIdView = ({
                 >
                     <MoreHorizontalIcon />
                 </Button>
+                {conversation &&
+                    <ConversationStatusButton
+                        onClick={handleToggleStatus}
+                        status={conversation?.status}
+                        disabled={isUpdatingStatus}
+                    />
+                }
             </header>
             <AIConversation className="max-h-[calc(100vh-180px)]">
                 <AIConversationContent>
@@ -132,7 +188,10 @@ export const ConversationIdView = ({
                         />
                         <AIInputToolbar>
                             <AIInputTools>
-                                <AIInputButton>
+                                <AIInputButton
+                                    onClick={handleEnhanceResponse}
+                                    disabled={conversation?.status === "resolved" || isEnhancing || !form.formState.isValid}
+                                >
                                     <Wand2Icon />
                                     Enhance
                                 </AIInputButton>

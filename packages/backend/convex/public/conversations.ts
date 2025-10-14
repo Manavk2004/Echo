@@ -88,7 +88,7 @@ export const getOne = query({
 
         return {
             _id: conversation._id,
-            statu: conversation.status,
+            status: conversation.status,
             threadId: conversation.threadId
         }
     }
