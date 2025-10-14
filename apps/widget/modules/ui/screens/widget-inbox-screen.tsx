@@ -31,7 +31,6 @@ export const WidgetInboxScreen = () => {
         }
     )
 
-    console.log("Here are the conversations", conversations)
 
     return(
         <>

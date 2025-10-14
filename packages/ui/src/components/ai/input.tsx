@@ -88,6 +88,7 @@ export const AIInput = ({ className, ...props }: AIInputProps) => (
 export type AIInputTextareaProps = ComponentProps<typeof Textarea> & {
   minHeight?: number;
   maxHeight?: number;
+  disabled?: boolean;
 };
 
 export const AIInputTextarea = ({
@@ -96,6 +97,7 @@ export const AIInputTextarea = ({
   placeholder = "What would you like to know?",
   minHeight = 48,
   maxHeight = 164,
+  disabled=false,
   ...props
 }: AIInputTextareaProps) => {
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
