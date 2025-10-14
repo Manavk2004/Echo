@@ -1,3 +1,4 @@
+import { Provider } from "jotai"
 import { AuthGuard } from "../../../components/auth-guard"
 import { DashboardSideBar } from "../../../components/dashboard-sidebar"
 import { OrganizationGuard } from "../../../components/organization-guard"
@@ -9,15 +10,19 @@ export const DashboardLayout = async ({ children }: {children: React.ReactNode }
     const defaultOpen = cookieStore.get("sidebar_state")?.value === "true"
 
     return(
+        
         <AuthGuard>
             <OrganizationGuard>
-                <SidebarProvider defaultOpen={defaultOpen}>
-                    <DashboardSideBar />
-                    <main className="flex flex-1 flex-col">
-                        {children}
-                    </main>
-                </SidebarProvider>
+                <Provider>
+                    <SidebarProvider defaultOpen={defaultOpen}>
+                        <DashboardSideBar />
+                        <main className="flex flex-1 flex-col">
+                            {children}
+                        </main>
+                    </SidebarProvider>
+                </Provider>
             </OrganizationGuard>
         </AuthGuard>
+
     )
 }
